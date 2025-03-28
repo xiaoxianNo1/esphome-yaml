@@ -19,7 +19,7 @@ binary_sensor:
     device_class: occupancy
 
   - platform: gpio
-    #背后按键（做长按恢复出厂配置，双击重置2413，单击重启模块）
+    #背后按键
     pin:
       number: 2
       mode:
@@ -27,6 +27,20 @@ binary_sensor:
         pullup: true
       inverted: true
     name: button
+    on_click: 
+      then:
+        - button.press: reboot
+    on_double_click: 
+      then:
+        - button.press: reset_mmw
+    on_multi_click: 
+      - timing: 
+          - ON for 1s to 5s
+          - OFF for at least 0.5s
+        then: 
+          - button.press: reset_mmw
+          - delay: 0.5s
+          - button.press: restart_factory_setting
 
 sensor:
   - platform: uptime
@@ -95,6 +109,10 @@ button:
       name: 'query_conf'
     reset_mmw:
       name: 'reset_mmw'
+      id: reset_mmw
+  - platform: factory_reset
+    name: restart_factory_setting
+    id: restart_factory_setting
 
 number:
   - platform: ra2413mt
