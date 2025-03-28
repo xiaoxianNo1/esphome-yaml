@@ -103,6 +103,7 @@ button:
   - platform: restart
     #重启esp模块
     name: reboot
+    id: reboot
 
   - platform: ra2413mt
     query_conf:
