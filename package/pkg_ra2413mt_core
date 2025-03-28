@@ -1,0 +1,116 @@
+web_server:
+  port: 80
+
+external_components:
+  - source:
+      type: git
+      url: https://github.com/xiaoxianNo1/esphome-components.git
+      ref: dev
+    components: [ ra2413mt ]
+
+ra2413mt:
+
+binary_sensor:
+  - platform: gpio
+    # 2413有人输出口
+    pin: 4
+    id: mmw
+    name: mmw
+    device_class: occupancy
+
+  - platform: gpio
+    #背后按键（做长按恢复出厂配置，双击重置2413，单击重启模块）
+    pin:
+      number: 2
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    name: button
+
+sensor:
+  - platform: uptime
+    #运行时间
+    name: uptime
+    
+  - platform: wifi_signal
+    #信号强度
+    name: signal
+    update_interval: 60s
+    
+  - platform: adc
+    #光照强度
+    pin: 3
+    name: brightness
+    attenuation: 12db
+    update_interval: 5s
+    device_class: illuminance
+    unit_of_measurement: "lx"
+    icon: mdi:brightness-6
+    filters:
+      - calibrate_linear:
+          method: least_squares
+          datapoints:
+          # Map 0.0 (from sensor) to 1.0 (true value)
+            - 0.00310 -> 100
+            - 3 -> 1
+    
+  - platform: internal_temperature
+    #CPU温度
+    id: cpu_temprature 
+    name: cpu_temprature
+
+  - platform: ra2413mt    
+    move_distance:
+      name: 'move_distance'
+
+    move_energy:
+      name: 'move_energy'
+
+    static_distance:
+      name: 'static_distance'
+
+    static_energy:
+      name: 'static_energy'
+
+text_sensor:
+  - platform: wifi_info
+    #链接的WiFi信息
+    ip_address:
+      name: ip
+    mac_address:
+      name: mac
+
+  - platform: ra2413mt
+    status:
+      name: 'status'
+
+button:
+  - platform: restart
+    #重启esp模块
+    name: reboot
+
+  - platform: ra2413mt
+    query_conf:
+      name: 'query_conf'
+    reset_mmw:
+      name: 'reset_mmw'
+
+number:
+  - platform: ra2413mt
+    max_move_distance:
+      name: 'max_move_distance'
+      unit_of_measurement: x 0.75m
+
+    max_static_distance:
+      name: 'max_static_distance'
+      unit_of_measurement: x 0.75m
+
+    move_sensitivity:
+      name: 'move_sensitivity'
+
+    static_sensitivity:
+      name: 'static_sensitivity'
+
+    unattended_duration:
+      name: 'unattended_duration'
