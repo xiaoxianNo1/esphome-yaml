@@ -1,5 +1,7 @@
 web_server:
   port: 80
+  version: 3
+  include_internal: true
 
 external_components:
   - source:
@@ -10,6 +12,17 @@ external_components:
 
 ra2413mt:
 
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: device_ip
+      icon: mdi:ip-outline
+      internal: true
+    mac_address:
+      name: device_mac
+      icon: mdi:map-marker-outline
+      internal: true
+      
 binary_sensor:
   - platform: gpio
     # 2413有人输出口
@@ -17,9 +30,8 @@ binary_sensor:
     id: mmw
     name: mmw
     device_class: occupancy
-
+    icon: mdi:motion-sensor
   - platform: gpio
-    #背后按键
     pin:
       number: 2
       mode:
@@ -27,6 +39,8 @@ binary_sensor:
         pullup: true
       inverted: true
     name: button
+    icon: mdi:radiobox-marked
+    internal: true
     on_click: 
       then:
         - button.press: reboot
@@ -53,21 +67,16 @@ sensor:
     update_interval: 60s
     
   - platform: adc
-    #光照强度
     pin: 3
     name: brightness
-    attenuation: 12db
+    attenuation: 11db
     update_interval: 5s
-    device_class: illuminance
-    unit_of_measurement: "lx"
+    unit_of_measurement: "%"
     icon: mdi:brightness-6
+    accuracy_decimals: 0
     filters:
-      - calibrate_linear:
-          method: least_squares
-          datapoints:
-          # Map 0.0 (from sensor) to 1.0 (true value)
-            - 0.00310 -> 100
-            - 3 -> 1
+      - lambda: |-
+          return ( 3 - x ) / 0.03;
     
   - platform: internal_temperature
     #CPU温度
@@ -87,18 +96,6 @@ sensor:
     static_energy:
       name: 'static_energy'
 
-text_sensor:
-  - platform: wifi_info
-    #链接的WiFi信息
-    ip_address:
-      name: ip
-    mac_address:
-      name: mac
-
-  - platform: ra2413mt
-    status:
-      name: 'status'
-
 button:
   - platform: restart
     #重启esp模块
@@ -106,9 +103,9 @@ button:
     id: reboot
 
   - platform: ra2413mt
-    query_conf:
+    get_conf:
       name: 'query_conf'
-    reset_mmw:
+    reset_conf:
       name: 'reset_mmw'
       id: reset_mmw
   - platform: factory_reset
