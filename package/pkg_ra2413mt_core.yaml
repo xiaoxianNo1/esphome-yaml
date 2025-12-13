@@ -4,12 +4,9 @@ web_server:
   include_internal: true
 
 external_components:
-  - source:
-      type: git
-      url: https://github.com/xiaoxianNo1/esphome-components.git
-      ref: dev
+  - source: github://xiaoxianNo1/esphome-components
     components: [ ra2413mt ]
-
+    
 ra2413mt:
 
 text_sensor:
