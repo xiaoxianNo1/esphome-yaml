@@ -1,0 +1,53 @@
+substitutions:
+  name: "esp32-mmw-ld2450"
+  friendly_name: "esp32-mmw-ld2450"
+  illuminance_update_interval: "2s"
+  hidden_ssid: "false"
+  log_level: DEBUG
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+  name_add_mac_suffix: True
+  comment: Everything Presence Lite
+  project: 
+    name: EverythingSmartTechnology.Everything Presence Lite
+    version: "1.4.1"
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+  level: ${log_level}
+
+# Enable Home Assistant API
+api:
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+http_request:
+
+wifi:
+  # ssid: !secret wifi_ssid
+  # password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: ${name}
+
+improv_serial:
+
+captive_portal:
+    
+web_server:
+  port: 80
+  version: 3
+  include_internal: true
+
+packages:
+  remote_package_shorthand: github://xiaoxianNo1/esphome-yaml/package/pkg-ld2450-core.yaml
